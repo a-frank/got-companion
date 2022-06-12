@@ -90,6 +90,8 @@ dependencies {
 	debugImplementation(Dependencies.Android.Compose.uiTestManifest)
 
 	testImplementation(Dependencies.junit)
+	testImplementation(Dependencies.mockk)
+	testImplementation(Dependencies.truth)
 
 	androidTestImplementation(Dependencies.Android.extJunit)
 	androidTestImplementation(Dependencies.Android.espressoCore)
