@@ -10,5 +10,6 @@ class HouseEntity(
 	val region: String,
 	val coatOfArms: String,
 	val words: String,
-	val currentLord: String
+	val currentLord: String,
+	val seats: List<String>
 )

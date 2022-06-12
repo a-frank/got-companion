@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="no_house_found">Es wurde kein Haus gefunden</string>
+	<string name="current_lord">Aktueller Herr</string>
+	<string name="coat_of_arms">Wappen</string>
+	<string name="region">Region</string>
+	<string name="seats">Sitze</string>
+</resources>

@@ -17,7 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import de.gnarly.got.details.HouseDetails
+import de.gnarly.got.details.HouseDetailsScreen
 import de.gnarly.got.overview.HousesOverviewScreen
 import de.gnarly.got.ui.theme.AppTheme
 
@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
 									}
 								}
 								addHouseDetailsContent {
-									HouseDetails(hiltViewModel())
+									HouseDetailsScreen(hiltViewModel())
 								}
 							}
 						}

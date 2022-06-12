@@ -51,5 +51,6 @@ private fun HouseEntity.toHouse(): House =
 		region = region,
 		coatOfArms = coatOfArms,
 		words = words,
-		currentLord = currentLord
+		currentLord = currentLord,
+		seats = seats
 	)

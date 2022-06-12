@@ -47,6 +47,7 @@ fun HousesOverviewLayout(houses: LazyPagingItems<House>, onHouseClicked: (House)
 					HouseItem(
 						house = house,
 						modifier = Modifier
+							.fillMaxWidth()
 							.clickable { onHouseClicked(house) }
 							.padding(top = 2.dp, bottom = 2.dp)
 					)
@@ -70,11 +71,12 @@ fun HousesOverviewLayoutPreview() {
 fun HouseItem(house: House, modifier: Modifier = Modifier) {
 	Card(
 		modifier = modifier
-			.fillMaxWidth()
 	) {
 		Column(Modifier.padding(8.dp)) {
-			Text(text = house.name, style = MaterialTheme.typography.bodyMedium)
-			Text(text = house.words, style = MaterialTheme.typography.bodySmall)
+			Text(text = house.name, style = MaterialTheme.typography.bodyLarge)
+			if (house.words.isNotEmpty()) {
+				Text(text = house.words, style = MaterialTheme.typography.bodySmall)
+			}
 		}
 	}
 }
@@ -92,7 +94,8 @@ private val houseLannister: House =
 		region = "The Westerlands",
 		coatOfArms = "A golden lion rampant on a crimson field",
 		words = "Hear Me Roar!",
-		currentLord = "Lord Tyrion Lannister"
+		currentLord = "Lord Tyrion Lannister",
+		seats = listOf("Hand of the King")
 	)
 
 private val houseStark: House =
@@ -102,5 +105,6 @@ private val houseStark: House =
 		region = "The North",
 		coatOfArms = "A grey direwolf's head facing sinister on a white field over green",
 		words = "Winter Is Coming",
-		currentLord = "Queen Sansa Stark"
+		currentLord = "Queen Sansa Stark",
+		seats = listOf("Wardens of the North")
 	)

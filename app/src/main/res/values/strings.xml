@@ -1,3 +1,8 @@
 <resources>
-	<string name="app_name">GoT Companion</string>
+	<string name="app_name" translatable="false">GoT Companion</string>
+	<string name="no_house_found">No house found</string>
+	<string name="current_lord">Current lord</string>
+	<string name="coat_of_arms">Coat of arms</string>
+	<string name="region">Region</string>
+	<string name="seats">Seats</string>
 </resources>
