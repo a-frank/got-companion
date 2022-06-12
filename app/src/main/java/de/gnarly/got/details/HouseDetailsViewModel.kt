@@ -28,9 +28,15 @@ class HouseDetailsViewModel @Inject constructor(
 		.flatMapLatest {
 			gotRepository.getHouseFlow(it)
 		}
-		.map {
+		.flatMapLatest { house ->
+			gotRepository.getNameOfTheCurrentLord(house.currentLord)
+				.map { lord ->
+					house to lord
+				}
+		}
+		.map { (house, lord) ->
 			HouseDetailsViewState(
-				house = it
+				house = house.copy(currentLord = lord ?: "")
 			)
 		}
 

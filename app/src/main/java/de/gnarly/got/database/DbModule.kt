@@ -19,4 +19,8 @@ object DbModule {
 	@Provides
 	fun provideHouseDao(db: GoTDatabase): HouseDao =
 		db.getHouseDao()
+
+	@Provides
+	fun provideCharacterDao(db: GoTDatabase): CharacterDao =
+		db.getCharacterDao()
 }

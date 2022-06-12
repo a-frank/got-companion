@@ -35,8 +35,8 @@ class HousesRemoteMeditor(
 				houseDao.clearHouses()
 			}
 
-			val entities = pagedHouses.houses.map {
-				it.toHouseEntity()
+			val entities = pagedHouses.houses.map { house ->
+				house.toHouseEntity()
 			}
 			houseDao.storeHouses(entities)
 			housesPagingKeyStore.saveNextPage(pagedHouses.nextPage)
