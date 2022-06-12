@@ -6,9 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
@@ -27,9 +28,24 @@ class MainActivity : ComponentActivity() {
 		super.onCreate(savedInstanceState)
 		setContent {
 			AppTheme {
+				val navController = rememberNavController()
+				var showNavigationBack by remember { mutableStateOf(false) }
+
+				navController.addOnDestinationChangedListener { controller, _, _ ->
+					showNavigationBack = controller.previousBackStackEntry != null
+				}
+
+
 				Scaffold(
 					topBar = {
 						SmallTopAppBar(
+							navigationIcon = {
+								if (showNavigationBack) {
+									IconButton(onClick = { navController.popBackStack() }) {
+										Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+									}
+								}
+							},
 							title = { Text(text = stringResource(id = R.string.app_name)) }
 						)
 					}
@@ -45,7 +61,7 @@ class MainActivity : ComponentActivity() {
 							),
 						color = MaterialTheme.colorScheme.background
 					) {
-						with(rememberNavController().toNavGraph()) {
+						with(navController.toNavGraph()) {
 							NavHost {
 								addHousesOverviewContent {
 									HousesOverviewScreen(hiltViewModel()) { house ->
