@@ -1,6 +1,8 @@
 package de.gnarly.got.overview
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.gnarly.got.repository.GoTRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +21,7 @@ class HousesOverviewViewModel @Inject constructor(
 	init {
 		_state.value = HousesOverviewViewState(
 			houses = gotRepository.houses()
+				.cachedIn(viewModelScope)
 		)
 	}
 

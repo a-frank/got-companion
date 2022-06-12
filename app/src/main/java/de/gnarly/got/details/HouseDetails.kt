@@ -1,6 +1,7 @@
 package de.gnarly.got.details
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +31,8 @@ private fun HouseDetailsLayout(house: House?) {
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			Text(text = stringResource(id = R.string.no_house_found), style = MaterialTheme.typography.headlineLarge)
+			CircularProgressIndicator()
+			Text(text = stringResource(id = R.string.loading_house_details), style = MaterialTheme.typography.bodyLarge)
 		}
 	} else {
 		Column(

@@ -15,9 +15,6 @@ interface HouseDao {
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	suspend fun storeHouses(entities: List<HouseEntity>)
 
-	@Query("DELETE FROM House")
-	suspend fun clearHouses()
-
 	@Query("SELECT * FROM HOUSE WHERE id = :id")
 	fun getHouseById(id: Int): Flow<HouseEntity>
 }

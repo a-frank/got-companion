@@ -41,8 +41,13 @@ fun HousesOverviewScreen(
 @Composable
 fun HousesOverviewLayout(houses: LazyPagingItems<House>, onHouseClicked: (House) -> Unit) {
 	Column(modifier = Modifier.padding(16.dp)) {
-		LazyColumn(modifier = Modifier.fillMaxSize()) {
-			items(items = houses, key = { house -> house.id }) { house ->
+		LazyColumn(
+			modifier = Modifier.fillMaxSize()
+		) {
+			items(
+				items = houses,
+				key = { house -> house.id }
+			) { house ->
 				if (house != null) {
 					HouseItem(
 						house = house,

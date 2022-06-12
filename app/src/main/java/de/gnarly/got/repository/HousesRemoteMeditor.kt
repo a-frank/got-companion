@@ -31,10 +31,6 @@ class HousesRemoteMeditor(
 
 			val pagedHouses = gotClient.getHousesPage(nextPage, state.config.pageSize)
 
-			if (loadType == LoadType.REFRESH) {
-				houseDao.clearHouses()
-			}
-
 			val entities = pagedHouses.houses.map { house ->
 				house.toHouseEntity()
 			}
