@@ -20,7 +20,14 @@ class EndToEndTest {
 			MainScreen()
 		}
 
-		composeTestRule.awaitIdle()
+		composeTestRule.waitUntil(5_000) {
+			try {
+				composeTestRule.onNodeWithTag("house 1").assertIsDisplayed()
+				true
+			} catch (e: Exception) {
+				false
+			}
+		}
 		composeTestRule.onNodeWithTag("house 1").performClick()
 		composeTestRule.awaitIdle()
 		val houseNameNode = composeTestRule.onNodeWithTag("house name")
