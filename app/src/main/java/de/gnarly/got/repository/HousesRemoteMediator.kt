@@ -11,7 +11,7 @@ import de.gnarly.got.network.HouseDto
 import kotlinx.coroutines.flow.first
 
 @OptIn(ExperimentalPagingApi::class)
-class HousesRemoteMeditor(
+class HousesRemoteMediator(
 	private val gotClient: GoTClient,
 	private val houseDao: HouseDao,
 	private val housesPagingKeyStore: HousesPagingKeyStore

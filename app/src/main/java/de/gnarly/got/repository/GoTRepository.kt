@@ -29,7 +29,7 @@ class GoTRepository @Inject constructor(
 		Pager(
 			PagingConfig(pageSize),
 			initialKey = 0,
-			remoteMediator = HousesRemoteMeditor(gotClient, houseDao, housesPagingKeyStore)
+			remoteMediator = HousesRemoteMediator(gotClient, houseDao, housesPagingKeyStore)
 		) {
 			houseDao.getHousesPaged()
 		}

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.google.common.truth.Truth.assertThat
 import de.gnarly.got.model.House
 import de.gnarly.got.repository.GoTRepository
+import de.gnarly.got.util.createHouse
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -59,15 +60,4 @@ class HouseDetailsViewModelTest {
 		assertThat(state.house).isNotNull()
 		assertThat(state.house).isEqualTo(expected)
 	}
-
-	private fun createHouse(id: Int) =
-		House(
-			id = id,
-			name = "N$id",
-			region = "R$id",
-			coatOfArms = "C$id",
-			words = "W$id",
-			currentLord = "L$id",
-			seats = listOf()
-		)
 }
