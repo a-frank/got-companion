@@ -43,17 +43,15 @@ class GoTClient @Inject constructor(
 		}
 	}
 
-	suspend fun getCharacter(url: String): CharacterDto? {
+	suspend fun getCharacter(url: String): CharacterDto? = try {
 		val response = httpClient.get(url)
-		return try {
-			if (response.status.value == HttpStatusCode.OK.value) {
-				response.body()
-			} else {
-				null
-			}
-		} catch (e: Exception) {
-			Timber.e(e)
+		if (response.status.value == HttpStatusCode.OK.value) {
+			response.body()
+		} else {
 			null
 		}
+	} catch (e: Exception) {
+		Timber.e(e)
+		null
 	}
 }
