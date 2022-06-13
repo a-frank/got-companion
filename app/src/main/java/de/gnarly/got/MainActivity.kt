@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun MainScreen() {
+fun MainScreen() {
 	val navController = rememberNavController()
 	var showNavigationBack by remember { mutableStateOf(false) }
 

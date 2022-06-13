@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -75,7 +77,9 @@ fun HousesOverviewLayoutPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 fun HouseItem(house: House, modifier: Modifier = Modifier) {
 	Card(
-		modifier = modifier
+		modifier = modifier.semantics {
+			testTag = "house ${house.id}"
+		}
 	) {
 		Column(Modifier.padding(8.dp)) {
 			Text(text = house.name, style = MaterialTheme.typography.bodyLarge)

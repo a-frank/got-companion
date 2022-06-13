@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,7 +40,9 @@ private fun HouseDetailsLayout(house: House?) {
 		Column(
 			modifier = Modifier.padding(16.dp)
 		) {
-			Text(text = house.name, style = MaterialTheme.typography.headlineSmall)
+			Text(text = house.name, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.semantics {
+				testTag = "house name"
+			})
 			if (house.words.isNotEmpty()) {
 				Text(text = house.words, style = MaterialTheme.typography.bodyMedium)
 			}
