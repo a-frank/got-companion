@@ -63,6 +63,7 @@ object Dependencies {
 		const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
 		const val activityCompose = "androidx.activity:activity-compose:1.3.1"
 
+		const val coreTesting = "androidx.arch.core:core-testing:2.1.0"
 		const val extJunit = "androidx.test.ext:junit:1.1.3"
 		const val espressoCore = "androidx.test.espresso:espresso-core:3.4.0"
 	}

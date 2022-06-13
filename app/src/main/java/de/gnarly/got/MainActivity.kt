@@ -23,56 +23,61 @@ import de.gnarly.got.ui.theme.AppTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-	@OptIn(ExperimentalMaterial3Api::class)
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {
 			AppTheme {
-				val navController = rememberNavController()
-				var showNavigationBack by remember { mutableStateOf(false) }
+				MainScreen()
+			}
+		}
+	}
+}
 
-				navController.addOnDestinationChangedListener { controller, _, _ ->
-					showNavigationBack = controller.previousBackStackEntry != null
-				}
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun MainScreen() {
+	val navController = rememberNavController()
+	var showNavigationBack by remember { mutableStateOf(false) }
+
+	navController.addOnDestinationChangedListener { controller, _, _ ->
+		showNavigationBack = controller.previousBackStackEntry != null
+	}
 
 
-				Scaffold(
-					topBar = {
-						SmallTopAppBar(
-							navigationIcon = {
-								if (showNavigationBack) {
-									IconButton(onClick = { navController.popBackStack() }) {
-										Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-									}
-								}
-							},
-							title = { Text(text = stringResource(id = R.string.app_name)) }
-						)
-					}
-				) {
-					Surface(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(
-								it.calculateLeftPadding(layoutDirection = LayoutDirection.Ltr),
-								it.calculateTopPadding(),
-								it.calculateEndPadding(LayoutDirection.Ltr),
-								it.calculateBottomPadding()
-							),
-						color = MaterialTheme.colorScheme.background
-					) {
-						with(navController.toNavGraph()) {
-							NavHost {
-								addHousesOverviewContent {
-									HousesOverviewScreen(hiltViewModel()) { house ->
-										navigateToDetails(house.id)
-									}
-								}
-								addHouseDetailsContent {
-									HouseDetailsScreen(hiltViewModel())
-								}
-							}
+	Scaffold(
+		topBar = {
+			SmallTopAppBar(
+				navigationIcon = {
+					if (showNavigationBack) {
+						IconButton(onClick = { navController.popBackStack() }) {
+							Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
 						}
+					}
+				},
+				title = { Text(text = stringResource(id = R.string.app_name)) }
+			)
+		}
+	) {
+		Surface(
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(
+					it.calculateLeftPadding(layoutDirection = LayoutDirection.Ltr),
+					it.calculateTopPadding(),
+					it.calculateEndPadding(LayoutDirection.Ltr),
+					it.calculateBottomPadding()
+				),
+			color = MaterialTheme.colorScheme.background
+		) {
+			with(navController.toNavGraph()) {
+				NavHost {
+					addHousesOverviewContent {
+						HousesOverviewScreen(hiltViewModel()) { house ->
+							navigateToDetails(house.id)
+						}
+					}
+					addHouseDetailsContent {
+						HouseDetailsScreen(hiltViewModel())
 					}
 				}
 			}
