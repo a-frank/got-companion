@@ -11,6 +11,7 @@ import javax.inject.Singleton
 @Singleton
 class GoTClient @Inject constructor(
 	private val httpClient: HttpClient,
+	private val linkHandler: LinkHandler,
 	@BaseUrl private val baseUrl: String
 ) {
 	suspend fun getHousesPage(page: Int, pageSize: Int): PagedHouses {
@@ -19,9 +20,7 @@ class GoTClient @Inject constructor(
 			if (response.status.value == HttpStatusCode.OK.value) {
 				val housesDtos = response.body<List<HouseDto>>()
 				val linkHeader = response.headers["Link"]
-				val linkTypes = linkHeader?.split(",") ?: emptyList()
-				val nextLink = linkTypes.find { it.contains("rel=\"next\"") }
-				val nextPage = nextLink?.substringAfter("page=")?.substringBefore("&")?.toIntOrNull()
+				val nextPage = linkHandler.getNextPage(linkHeader)
 				PagedHouses(
 					currentPage = page,
 					nextPage = nextPage,
