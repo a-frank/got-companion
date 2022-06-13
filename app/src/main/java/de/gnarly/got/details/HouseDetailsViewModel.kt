@@ -3,11 +3,13 @@ package de.gnarly.got.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.gnarly.got.repository.GoTRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,11 +39,6 @@ class HouseDetailsViewModel @Inject constructor(
 				house = house.copy(currentLord = lord ?: "")
 			)
 		}
-		.stateIn(
-			viewModelScope,
-			SharingStarted.WhileSubscribed(5_000),
-			INITIAL_STATE
-		)
 
 	companion object {
 		val INITIAL_STATE = HouseDetailsViewState()

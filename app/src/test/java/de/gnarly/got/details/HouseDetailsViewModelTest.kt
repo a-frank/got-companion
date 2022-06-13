@@ -3,7 +3,6 @@ package de.gnarly.got.details
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.google.common.truth.Truth.assertThat
-import de.gnarly.got.model.House
 import de.gnarly.got.repository.GoTRepository
 import de.gnarly.got.util.createHouse
 import io.mockk.coEvery
