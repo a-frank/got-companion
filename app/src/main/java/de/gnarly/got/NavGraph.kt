@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import de.gnarly.got.details.paramId
 
 class NavGraph(private val navHostController: NavHostController) {
 
@@ -39,7 +40,7 @@ class HousesOverviewContext(private val navHostController: NavHostController) {
 
 class HouseDetailContext(private val navBackStackEntry: NavBackStackEntry) {
 	val paramId: Int
-		get() = navBackStackEntry.arguments?.getString(Destination.HouseDetails.paramId)?.toIntOrNull() ?: 0
+		get() = navBackStackEntry.arguments?.getString(Destination.HouseDetails.id)?.toIntOrNull() ?: 0
 }
 
 private sealed class Destination(
@@ -52,8 +53,8 @@ private sealed class Destination(
 	}
 
 	object HouseDetails : Destination("details") {
-		const val paramId = "id"
-		override val routePattern: String = "$name/{$paramId}"
+		const val id = paramId
+		override val routePattern: String = "$name/{$id}"
 		fun createRoute(id: Int): String = "$name/$id"
 	}
 }

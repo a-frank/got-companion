@@ -2,6 +2,7 @@ object Dependencies {
 	object Kotlin {
 		const val version = "1.6.10"
 		const val androidPlugin = "org.jetbrains.kotlin.android"
+		const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test-jvm:1.6.2"
 
 		object Serialization {
 			const val pluginId = "kotlinx-serialization"

@@ -8,9 +8,11 @@ import de.gnarly.got.database.HouseEntity
 import de.gnarly.got.model.House
 import de.gnarly.got.network.CharacterDto
 import de.gnarly.got.network.GoTClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,7 +28,7 @@ class GoTRepository @Inject constructor(
 	fun houses(pageSize: Int = 20): Flow<PagingData<House>> =
 		Pager(
 			PagingConfig(pageSize),
-			initialKey = 1,
+			initialKey = 0,
 			remoteMediator = HousesRemoteMeditor(gotClient, houseDao, housesPagingKeyStore)
 		) {
 			houseDao.getHousesPaged()
@@ -38,6 +40,7 @@ class GoTRepository @Inject constructor(
 						it.toHouse()
 					}
 			}
+			.flowOn(Dispatchers.IO)
 
 	fun getHouseFlow(id: Int): Flow<House> =
 		houseDao.getHouseById(id)

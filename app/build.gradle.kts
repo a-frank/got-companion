@@ -92,6 +92,8 @@ dependencies {
 	testImplementation(Dependencies.junit)
 	testImplementation(Dependencies.mockk)
 	testImplementation(Dependencies.truth)
+	testImplementation(Dependencies.Kotlin.coroutinesTest)
+	testImplementation("androidx.arch.core:core-testing:2.1.0")
 
 	androidTestImplementation(Dependencies.Android.extJunit)
 	androidTestImplementation(Dependencies.Android.espressoCore)

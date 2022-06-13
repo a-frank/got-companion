@@ -19,7 +19,7 @@ class HouseDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 	@OptIn(ExperimentalCoroutinesApi::class)
 	val state: Flow<HouseDetailsViewState> = savedStateHandle
-		.getLiveData<String>("id")
+		.getLiveData<String>(paramId)
 		.asFlow()
 		.map {
 			it.toIntOrNull()
