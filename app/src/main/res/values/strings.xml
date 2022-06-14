@@ -1,6 +1,6 @@
 <resources>
 	<string name="app_name" translatable="false">GoT Companion</string>
-	<string name="loading_house_details">No house found…</string>
+	<string name="loading_house_details">Loading house details…</string>
 	<string name="current_lord">Current lord</string>
 	<string name="coat_of_arms">Coat of arms</string>
 	<string name="region">Region</string>
