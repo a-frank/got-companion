@@ -17,19 +17,29 @@ class HousesRemoteMediator(
 	private val housesPagingKeyStore: HousesPagingKeyStore
 ) : RemoteMediator<Int, HouseEntity>() {
 
+	override suspend fun initialize(): InitializeAction {
+		return if (housesPagingKeyStore.nextPage.first() == null) {
+			InitializeAction.LAUNCH_INITIAL_REFRESH
+		} else {
+			InitializeAction.SKIP_INITIAL_REFRESH
+		}
+	}
+
 	override suspend fun load(loadType: LoadType, state: PagingState<Int, HouseEntity>): MediatorResult {
 		return try {
 			when (loadType) {
-				LoadType.REFRESH ->
-					housesPagingKeyStore.resetNextPage()
-
+				LoadType.REFRESH -> housesPagingKeyStore.resetNextPage()
 				LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
 				LoadType.APPEND -> {}
 			}
 
 			val nextPage = housesPagingKeyStore.nextPage.first() ?: return MediatorResult.Success(endOfPaginationReached = true)
 
-			val pagedHouses = gotClient.getHousesPage(nextPage, state.config.pageSize)
+			val pagedHousesResult = gotClient.getHousesPage(nextPage, state.config.pageSize)
+			val pagedHouses = when (pagedHousesResult.isSuccess) {
+				true -> pagedHousesResult.getOrThrow()
+				false -> return MediatorResult.Error(pagedHousesResult.exceptionOrNull() ?: IllegalStateException("Something went wrong when loading page $nextPage"))
+			}
 
 			val entities = pagedHouses.houses.map { house ->
 				house.toHouseEntity()

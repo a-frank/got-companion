@@ -14,33 +14,24 @@ class GoTClient @Inject constructor(
 	private val linkHandler: LinkHandler,
 	@BaseUrl private val baseUrl: String
 ) {
-	suspend fun getHousesPage(page: Int, pageSize: Int): PagedHouses {
+	suspend fun getHousesPage(page: Int, pageSize: Int): Result<PagedHouses> = try {
 		val response = httpClient.get("$baseUrl/houses?page=$page&pageSize=$pageSize")
-		return try {
-			if (response.status.value == HttpStatusCode.OK.value) {
-				val housesDtos = response.body<List<HouseDto>>()
-				val linkHeader = response.headers["Link"]
-				val nextPage = linkHandler.getNextPage(linkHeader)
+		if (response.status.value == HttpStatusCode.OK.value) {
+			val housesDtos = response.body<List<HouseDto>>()
+			val linkHeader = response.headers["Link"]
+			val nextPage = linkHandler.getNextPage(linkHeader)
+			Result.success(
 				PagedHouses(
 					currentPage = page,
 					nextPage = nextPage,
 					houses = housesDtos
 				)
-			} else {
-				PagedHouses(
-					currentPage = page,
-					nextPage = null,
-					houses = emptyList()
-				)
-			}
-		} catch (e: Exception) {
-			Timber.e(e)
-			PagedHouses(
-				currentPage = page,
-				nextPage = null,
-				houses = emptyList()
 			)
+		} else {
+			Result.failure(IllegalStateException("Could not load page $page. Response code: ${response.status}"))
 		}
+	} catch (e: Exception) {
+		Result.failure(e)
 	}
 
 	suspend fun getCharacter(url: String): CharacterDto? = try {

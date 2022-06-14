@@ -21,7 +21,7 @@ class HouseRemoteMeditorTest {
 
 		val dtos = listOf(createHouseDto(1), createHouseDto(2))
 		val client = mockk<GoTClient> {
-			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns PagedHouses(page, 2, dtos)
+			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns Result.success(PagedHouses(page, 2, dtos))
 		}
 
 		val storedHouses = mutableListOf<HouseEntity>()
@@ -64,7 +64,7 @@ class HouseRemoteMeditorTest {
 		val page = 2
 
 		val client = mockk<GoTClient> {
-			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns PagedHouses(page, null, listOf(createHouseDto(1), createHouseDto(2)))
+			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns Result.success(PagedHouses(page, null, listOf(createHouseDto(1), createHouseDto(2))))
 		}
 		val dao = mockk<HouseDao> {
 			coEvery { storeHouses(any()) } just runs
