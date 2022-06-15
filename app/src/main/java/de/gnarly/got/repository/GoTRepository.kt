@@ -2,6 +2,7 @@ package de.gnarly.got.repository
 
 import androidx.paging.*
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.getOrHandle
 import arrow.core.left
 import arrow.core.right
@@ -31,7 +32,10 @@ class GoTRepository @Inject constructor(
 	@OptIn(ExperimentalPagingApi::class)
 	fun houses(pageSize: Int = 20): Flow<PagingData<House>> =
 		Pager(
-			config = PagingConfig(pageSize),
+			config = PagingConfig(
+				pageSize = pageSize,
+				prefetchDistance = 5
+			),
 			remoteMediator = HousesRemoteMediator(gotClient, houseDao, housesPagingKeyStore)
 		) {
 			houseDao.getHousesPaged()
@@ -55,9 +59,10 @@ class GoTRepository @Inject constructor(
 	fun getNameOfTheCurrentLord(url: String): Flow<String> {
 		if (url.isNotBlank()) {
 			launch {
-				gotClient.getCharacter(url).map {
-					val entity = it.toEntity()
-					characterDao.storeCharacter(entity)
+				gotClient.getCharacter(url).map { dto ->
+					dto.toEntity().map { entity ->
+						characterDao.storeCharacter(entity)
+					}
 				}
 			}
 
@@ -86,12 +91,13 @@ private fun HouseEntity.toHouse(): House =
 		seats = seats
 	)
 
-private fun CharacterDto.toEntity(): CharacterEntity =
+private suspend fun CharacterDto.toEntity(): Either<Exception, CharacterEntity> = either {
 	CharacterEntity(
-		id = url.substringAfterLast("/").toLong(),
+		id = getIdFromCharacterUrl(url).bind(),
 		url = url,
 		name = name
 	)
+}
 
 private fun getIdFromCharacterUrl(url: String): Either<Exception, Long> = try {
 	url.substringAfterLast("/").toLong().right()
