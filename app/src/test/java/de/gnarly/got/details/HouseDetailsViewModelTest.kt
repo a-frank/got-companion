@@ -39,8 +39,7 @@ class HouseDetailsViewModelTest {
 	}
 
 	@Test
-	fun `loading details`(): Unit = testScope.runTest {
-
+	fun `loading detail state with id`(): Unit = testScope.runTest {
 		val house = createHouse(1)
 		val currentLord = "The current lord"
 		val expected = house.copy(currentLord = currentLord)
@@ -48,7 +47,6 @@ class HouseDetailsViewModelTest {
 		val repo = mockk<GoTRepository> {
 			every { getHouseFlow(eq(1)) } returns flowOf(house)
 			coEvery { getNameOfTheCurrentLord(any()) } returns flowOf(currentLord)
-
 		}
 
 		val savedState = SavedStateHandle()

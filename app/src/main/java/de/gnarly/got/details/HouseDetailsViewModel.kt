@@ -36,7 +36,7 @@ class HouseDetailsViewModel @Inject constructor(
 		}
 		.map { (house, lord) ->
 			HouseDetailsViewState(
-				house = house.copy(currentLord = lord ?: "")
+				house = house.copy(currentLord = lord)
 			)
 		}
 

@@ -75,6 +75,7 @@ object Dependencies {
 	}
 
 	const val timber = "com.jakewharton.timber:timber:5.0.1"
+	const val arrow = "io.arrow-kt:arrow-core:1.1.2"
 
 	const val junit = "junit:junit:4.13.2"
 	const val mockk = "io.mockk:mockk:1.12.4"

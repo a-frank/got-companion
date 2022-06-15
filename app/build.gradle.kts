@@ -85,6 +85,7 @@ dependencies {
 	implementation(Dependencies.Android.dataStore)
 
 	implementation(Dependencies.timber)
+	implementation(Dependencies.arrow)
 
 	debugImplementation(Dependencies.Android.Compose.uiTooling)
 	debugImplementation(Dependencies.Android.Compose.uiTestManifest)

@@ -1,6 +1,10 @@
 package de.gnarly.got.repository
 
 import androidx.paging.*
+import arrow.core.Either
+import arrow.core.getOrHandle
+import arrow.core.left
+import arrow.core.right
 import de.gnarly.got.database.CharacterDao
 import de.gnarly.got.database.CharacterEntity
 import de.gnarly.got.database.HouseDao
@@ -8,14 +12,14 @@ import de.gnarly.got.database.HouseEntity
 import de.gnarly.got.model.House
 import de.gnarly.got.network.CharacterDto
 import de.gnarly.got.network.GoTClient
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class GoTRepository @Inject constructor(
@@ -23,12 +27,11 @@ class GoTRepository @Inject constructor(
 	private val houseDao: HouseDao,
 	private val characterDao: CharacterDao,
 	private val housesPagingKeyStore: HousesPagingKeyStore
-) {
+) : CoroutineScope {
 	@OptIn(ExperimentalPagingApi::class)
 	fun houses(pageSize: Int = 20): Flow<PagingData<House>> =
 		Pager(
-			PagingConfig(pageSize),
-			initialKey = 0,
+			config = PagingConfig(pageSize),
 			remoteMediator = HousesRemoteMediator(gotClient, houseDao, housesPagingKeyStore)
 		) {
 			houseDao.getHousesPaged()
@@ -49,19 +52,27 @@ class GoTRepository @Inject constructor(
 				it.toHouse()
 			}
 
-	suspend fun getNameOfTheCurrentLord(url: String): Flow<String?> {
+	fun getNameOfTheCurrentLord(url: String): Flow<String> {
 		if (url.isNotBlank()) {
-			coroutineScope {
-				val character = gotClient.getCharacter(url)
-				if (character != null) {
-					val entity = character.toEntity()
+			launch {
+				gotClient.getCharacter(url).map {
+					val entity = it.toEntity()
 					characterDao.storeCharacter(entity)
 				}
 			}
+
 		}
-		return characterDao.getCharacterByUrl(url)
-			.map { it?.name }
+		return getIdFromCharacterUrl(url)
+			.map { id ->
+				characterDao.getCharacterById(id)
+					.map { it?.name ?: "" }
+			}
+			.getOrHandle {
+				flowOf("")
+			}
 	}
+
+	override val coroutineContext: CoroutineContext = Dispatchers.IO + SupervisorJob()
 }
 
 private fun HouseEntity.toHouse(): House =
@@ -82,3 +93,8 @@ private fun CharacterDto.toEntity(): CharacterEntity =
 		name = name
 	)
 
+private fun getIdFromCharacterUrl(url: String): Either<Exception, Long> = try {
+	url.substringAfterLast("/").toLong().right()
+} catch (e: Exception) {
+	e.left()
+}

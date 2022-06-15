@@ -1,5 +1,6 @@
 package de.gnarly.got.details
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -64,9 +65,11 @@ private fun HouseDetailsLayout(house: House?) {
 
 @Composable
 private fun SpacedNotEmptyLabeledText(label: String, text: String, spacing: Dp = 8.dp) {
-	if (text.isNotEmpty()) {
+	AnimatedVisibility(
+		visible = text.isNotEmpty(),
+		modifier = Modifier.padding(bottom = spacing)
+	) {
 		LabeledText(label = label, text = text)
-		Spacer(modifier = Modifier.padding(spacing))
 	}
 }
 

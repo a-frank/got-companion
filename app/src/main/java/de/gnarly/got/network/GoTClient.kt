@@ -1,5 +1,8 @@
 package de.gnarly.got.network
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -14,35 +17,36 @@ class GoTClient @Inject constructor(
 	private val linkHandler: LinkHandler,
 	@BaseUrl private val baseUrl: String
 ) {
-	suspend fun getHousesPage(page: Int, pageSize: Int): Result<PagedHouses> = try {
+	suspend fun getHousesPage(page: Int, pageSize: Int): Either<Exception, PagedHouses> = try {
 		val response = httpClient.get("$baseUrl/houses?page=$page&pageSize=$pageSize")
 		if (response.status.value == HttpStatusCode.OK.value) {
 			val housesDtos = response.body<List<HouseDto>>()
 			val linkHeader = response.headers["Link"]
 			val nextPage = linkHandler.getNextPage(linkHeader)
-			Result.success(
-				PagedHouses(
-					currentPage = page,
-					nextPage = nextPage,
-					houses = housesDtos
-				)
-			)
-		} else {
-			Result.failure(IllegalStateException("Could not load page $page. Response code: ${response.status}"))
-		}
-	} catch (e: Exception) {
-		Result.failure(e)
-	}
+			PagedHouses(
+				currentPage = page,
+				nextPage = nextPage,
+				houses = housesDtos
+			).right()
 
-	suspend fun getCharacter(url: String): CharacterDto? = try {
-		val response = httpClient.get(url)
-		if (response.status.value == HttpStatusCode.OK.value) {
-			response.body()
 		} else {
-			null
+			IllegalStateException("Could not load page $page. Response code: ${response.status}").left()
 		}
 	} catch (e: Exception) {
 		Timber.e(e)
-		null
+		e.left()
 	}
+
+	suspend fun getCharacter(url: String): Either<Exception, CharacterDto> =
+		try {
+			val response = httpClient.get(url)
+			if (response.status.value == HttpStatusCode.OK.value) {
+				response.body<CharacterDto>().right()
+			} else {
+				IllegalStateException("Failed to load character with error code ${response.status.value}").left()
+			}
+		} catch (e: Exception) {
+			Timber.e(e)
+			e.left()
+		}
 }

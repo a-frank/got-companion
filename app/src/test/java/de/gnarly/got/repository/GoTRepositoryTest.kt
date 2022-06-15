@@ -1,5 +1,6 @@
 package de.gnarly.got.repository
 
+import arrow.core.right
 import com.google.common.truth.Truth.assertThat
 import de.gnarly.got.database.CharacterDao
 import de.gnarly.got.database.CharacterEntity
@@ -10,6 +11,8 @@ import de.gnarly.got.network.GoTClient
 import io.mockk.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class GoTRepositoryTest {
@@ -44,20 +47,22 @@ class GoTRepositoryTest {
 	@Test
 	fun `get blank name of current lord`(): Unit = runBlocking {
 		val characterDao = mockk<CharacterDao> {
-			every { getCharacterByUrl(any()) } returns emptyFlow()
+			every { getCharacterById(any()) } returns emptyFlow()
 		}
 		val gotClient = mockk<GoTClient>()
 
 		val repo = repo(characterDao = characterDao, gotClient = gotClient)
 		val nameFlow = repo.getNameOfTheCurrentLord("")
-		assertThat(nameFlow.toList()).isEmpty()
+		val names = nameFlow.toList()
+		assertThat(names).hasSize(1)
+		assertThat(names[0]).isEqualTo("")
 	}
 
 	@Test
 	fun `get name of current lord`(): Unit = runBlocking {
 		val entity = CharacterEntity(
 			id = 5,
-			url = "http",
+			url = "http/5",
 			name = "Oh Lord"
 		)
 		val dto = CharacterDto(
@@ -66,16 +71,16 @@ class GoTRepositoryTest {
 		)
 
 		val characterDao = mockk<CharacterDao> {
-			every { getCharacterByUrl(any()) } returns flowOf(entity)
+			every { getCharacterById(any()) } returns flowOf(entity)
 			coEvery { storeCharacter(any()) } just runs
 		}
 		val gotClient = mockk<GoTClient> {
-			coEvery { getCharacter(any()) } returns dto
+			coEvery { getCharacter(any()) } returns dto.right()
 		}
 
 		val repo = repo(characterDao = characterDao, gotClient = gotClient)
-		val nameFlow = repo.getNameOfTheCurrentLord("http")
-		val name = nameFlow.single()
+		val nameFlow = repo.getNameOfTheCurrentLord("http/5")
+		val name = nameFlow.first()
 		assertThat(name).isEqualTo(entity.name)
 		coVerify(exactly = 1) {
 			gotClient.getCharacter(any())

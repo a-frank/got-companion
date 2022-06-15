@@ -1,6 +1,8 @@
 package de.gnarly.got.repository
 
 import androidx.paging.*
+import arrow.core.left
+import arrow.core.right
 import com.google.common.truth.Truth.assertThat
 import de.gnarly.got.database.HouseDao
 import de.gnarly.got.database.HouseEntity
@@ -21,7 +23,7 @@ class HouseRemoteMeditorTest {
 
 		val dtos = listOf(createHouseDto(1), createHouseDto(2))
 		val client = mockk<GoTClient> {
-			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns Result.success(PagedHouses(page, 2, dtos))
+			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns PagedHouses(page, 2, dtos).right()
 		}
 
 		val storedHouses = mutableListOf<HouseEntity>()
@@ -64,7 +66,7 @@ class HouseRemoteMeditorTest {
 		val page = 2
 
 		val client = mockk<GoTClient> {
-			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns Result.success(PagedHouses(page, null, listOf(createHouseDto(1), createHouseDto(2))))
+			coEvery { getHousesPage(eq(page), eq(pageSize)) } returns PagedHouses(page, null, listOf(createHouseDto(1), createHouseDto(2))).right()
 		}
 		val dao = mockk<HouseDao> {
 			coEvery { storeHouses(any()) } just runs
@@ -92,12 +94,17 @@ class HouseRemoteMeditorTest {
 	}
 
 	@Test
-	fun `load page failed with failed reset`(): Unit = runBlocking{
+	fun `load page failed with failed reset`(): Unit = runBlocking {
 		val exception = IllegalStateException("Did not work")
-		val keyStore = mockk<HousesPagingKeyStore>{
-			coEvery { resetNextPage() } throws exception
+		val keyStore = mockk<HousesPagingKeyStore> {
+			coEvery { resetNextPage() } just runs
+			every { nextPage } returns flowOf(1)
 		}
-		val mediator = HousesRemoteMediator(mockk(), mockk(), keyStore)
+		val client = mockk<GoTClient> {
+			coEvery { getHousesPage(any(), any()) } returns exception.left()
+		}
+
+		val mediator = HousesRemoteMediator(client, mockk(), keyStore)
 		val result = mediator.load(
 			loadType = LoadType.REFRESH,
 			state = PagingState(
