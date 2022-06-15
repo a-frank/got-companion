@@ -1,27 +1,30 @@
 package de.gnarly.got.overview
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import de.gnarly.got.R
 import de.gnarly.got.model.House
 import kotlinx.coroutines.flow.flowOf
 
@@ -42,7 +45,11 @@ fun HousesOverviewScreen(
 
 @Composable
 fun HousesOverviewLayout(houses: LazyPagingItems<House>, onHouseClicked: (House) -> Unit) {
-	Column(modifier = Modifier.padding(16.dp)) {
+	Box(
+		modifier = Modifier
+			.padding(16.dp)
+			.fillMaxSize()
+	) {
 		LazyColumn(
 			modifier = Modifier.fillMaxSize()
 		) {
@@ -61,6 +68,25 @@ fun HousesOverviewLayout(houses: LazyPagingItems<House>, onHouseClicked: (House)
 				}
 			}
 		}
+		AnimatedVisibility(
+			visible = houses.loadState.append is LoadState.Loading,
+			modifier = Modifier.align(BottomCenter)
+		) {
+			CircularProgressIndicator()
+		}
+		AnimatedVisibility(
+			visible = houses.loadState.append is LoadState.Error,
+			modifier = Modifier
+				.align(BottomEnd)
+				.padding(16.dp)
+		) {
+			FloatingActionButton(onClick = { houses.retry() }) {
+				Icon(
+					imageVector = Icons.Default.Warning,
+					contentDescription = stringResource(id = R.string.retry_loading)
+				)
+			}
+		}
 	}
 }
 
@@ -68,6 +94,36 @@ fun HousesOverviewLayout(houses: LazyPagingItems<House>, onHouseClicked: (House)
 @Composable
 fun HousesOverviewLayoutPreview() {
 	val pagingData = PagingData.from(listOf(houseLannister, houseStark))
+	val data = flowOf(pagingData)
+
+	HousesOverviewLayout(data.collectAsLazyPagingItems()) {}
+}
+
+@Preview
+@Composable
+fun HousesOverviewLayoutLoadingPreview() {
+	val pagingData = PagingData.empty<House>(
+		LoadStates(
+			refresh = LoadState.NotLoading(false),
+			prepend = LoadState.NotLoading(false),
+			append = LoadState.Loading
+		)
+	)
+	val data = flowOf(pagingData)
+
+	HousesOverviewLayout(data.collectAsLazyPagingItems()) {}
+}
+
+@Preview
+@Composable
+fun HousesOverviewLayoutRetryPreview() {
+	val pagingData = PagingData.empty<House>(
+		LoadStates(
+			refresh = LoadState.NotLoading(false),
+			prepend = LoadState.NotLoading(false),
+			append = LoadState.Error(IllegalStateException("error loading"))
+		)
+	)
 	val data = flowOf(pagingData)
 
 	HousesOverviewLayout(data.collectAsLazyPagingItems()) {}

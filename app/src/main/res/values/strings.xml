@@ -5,4 +5,5 @@
 	<string name="coat_of_arms">Coat of arms</string>
 	<string name="region">Region</string>
 	<string name="seats">Seats</string>
+	<string name="retry_loading">Retry loading</string>
 </resources>
