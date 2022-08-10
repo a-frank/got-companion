@@ -30,11 +30,11 @@ class GoTRepository @Inject constructor(
 	private val housesPagingKeyStore: HousesPagingKeyStore
 ) : CoroutineScope {
 	@OptIn(ExperimentalPagingApi::class)
-	fun houses(pageSize: Int = 20): Flow<PagingData<House>> =
+	fun houses(pageSize: Int = HOUSES_PAGE_SIZE): Flow<PagingData<House>> =
 		Pager(
 			config = PagingConfig(
 				pageSize = pageSize,
-				prefetchDistance = 5
+				prefetchDistance = HOUSES_PREFETCH
 			),
 			remoteMediator = HousesRemoteMediator(gotClient, houseDao, housesPagingKeyStore)
 		) {
@@ -59,13 +59,14 @@ class GoTRepository @Inject constructor(
 	fun getNameOfTheCurrentLord(url: String): Flow<String> {
 		if (url.isNotBlank()) {
 			launch {
-				gotClient.getCharacter(url).map { dto ->
-					dto.toEntity().map { entity ->
-						characterDao.storeCharacter(entity)
+				if (!characterDao.doesCharacterExist(url)) {
+					gotClient.getCharacter(url).map { dto ->
+						dto.toEntity().map { entity ->
+							characterDao.storeCharacter(entity)
+						}
 					}
 				}
 			}
-
 		}
 		return getIdFromCharacterUrl(url)
 			.map { id ->
@@ -78,6 +79,11 @@ class GoTRepository @Inject constructor(
 	}
 
 	override val coroutineContext: CoroutineContext = Dispatchers.IO + SupervisorJob()
+
+	companion object {
+		private const val HOUSES_PAGE_SIZE = 20
+		private const val HOUSES_PREFETCH = 5
+	}
 }
 
 private fun HouseEntity.toHouse(): House =
