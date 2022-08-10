@@ -34,7 +34,7 @@ class GoTRepository @Inject constructor(
 		Pager(
 			config = PagingConfig(
 				pageSize = pageSize,
-				prefetchDistance = HOUSES_PREFETCH
+				initialLoadSize = pageSize * 2,
 			),
 			remoteMediator = HousesRemoteMediator(gotClient, houseDao, housesPagingKeyStore)
 		) {
@@ -82,7 +82,6 @@ class GoTRepository @Inject constructor(
 
 	companion object {
 		private const val HOUSES_PAGE_SIZE = 20
-		private const val HOUSES_PREFETCH = 5
 	}
 }
 

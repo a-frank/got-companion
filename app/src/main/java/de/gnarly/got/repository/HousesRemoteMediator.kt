@@ -11,6 +11,7 @@ import de.gnarly.got.database.HouseEntity
 import de.gnarly.got.network.GoTClient
 import de.gnarly.got.network.HouseDto
 import kotlinx.coroutines.flow.first
+import timber.log.Timber
 
 @OptIn(ExperimentalPagingApi::class)
 class HousesRemoteMediator(
@@ -47,6 +48,7 @@ class HousesRemoteMediator(
 
 			MediatorResult.Success(endOfPaginationReached = pagedHouses.nextPage == null)
 		}.getOrHandle {
+			Timber.e(it)
 			MediatorResult.Error(it)
 		}
 }
