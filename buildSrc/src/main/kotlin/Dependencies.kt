@@ -13,7 +13,7 @@ object Dependencies {
 
 	object Android {
 		object Plugin {
-			const val version = "7.2.1"
+			const val version = "7.2.2"
 			const val application = "com.android.application"
 		}
 
