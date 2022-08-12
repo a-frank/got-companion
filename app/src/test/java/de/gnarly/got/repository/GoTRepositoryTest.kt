@@ -9,9 +9,13 @@ import de.gnarly.got.database.HouseEntity
 import de.gnarly.got.network.CharacterDto
 import de.gnarly.got.network.GoTClient
 import io.mockk.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -73,6 +77,7 @@ class GoTRepositoryTest {
 		val characterDao = mockk<CharacterDao> {
 			every { getCharacterById(any()) } returns flowOf(entity)
 			coEvery { storeCharacter(any()) } just runs
+			coEvery { doesCharacterExist(any()) } returns false
 		}
 		val gotClient = mockk<GoTClient> {
 			coEvery { getCharacter(any()) } returns dto.right()
@@ -94,12 +99,14 @@ class GoTRepositoryTest {
 		gotClient: GoTClient = mockk(),
 		houseDao: HouseDao = mockk(),
 		characterDao: CharacterDao = mockk(),
-		housesPagingKeyStore: HousesPagingKeyStore = mockk()
+		housesPagingKeyStore: HousesPagingKeyStore = mockk(),
+		dispatcher: CoroutineDispatcher = Dispatchers.Default
 	): GoTRepository =
 		GoTRepository(
 			gotClient = gotClient,
 			houseDao = houseDao,
 			characterDao = characterDao,
-			housesPagingKeyStore = housesPagingKeyStore
+			housesPagingKeyStore = housesPagingKeyStore,
+			coroutineDispatcher = dispatcher
 		)
 }

@@ -44,9 +44,8 @@ class HouseDetailsViewModelTest {
 		val currentLord = "The current lord"
 		val expected = house.copy(currentLord = currentLord)
 
-		val repo = mockk<GoTRepository> {
-			every { getHouseFlow(eq(1)) } returns flowOf(house)
-			coEvery { getNameOfTheCurrentLord(any()) } returns flowOf(currentLord)
+		val repo = mockk<GetHouseDetailsUseCase> {
+			every { this@mockk.invoke(eq(1)) } returns flowOf(house.copy(currentLord = currentLord))
 		}
 
 		val savedState = SavedStateHandle()

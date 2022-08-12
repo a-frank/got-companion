@@ -6,6 +6,7 @@ import arrow.core.continuations.either
 import arrow.core.getOrHandle
 import arrow.core.left
 import arrow.core.right
+import de.gnarly.got.coroutines.Io
 import de.gnarly.got.database.CharacterDao
 import de.gnarly.got.database.CharacterEntity
 import de.gnarly.got.database.HouseDao
@@ -13,11 +14,8 @@ import de.gnarly.got.database.HouseEntity
 import de.gnarly.got.model.House
 import de.gnarly.got.network.CharacterDto
 import de.gnarly.got.network.GoTClient
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
@@ -27,7 +25,8 @@ class GoTRepository @Inject constructor(
 	private val gotClient: GoTClient,
 	private val houseDao: HouseDao,
 	private val characterDao: CharacterDao,
-	private val housesPagingKeyStore: HousesPagingKeyStore
+	private val housesPagingKeyStore: HousesPagingKeyStore,
+	@Io private val coroutineDispatcher: CoroutineDispatcher
 ) : CoroutineScope {
 	@OptIn(ExperimentalPagingApi::class)
 	fun houses(pageSize: Int = HOUSES_PAGE_SIZE): Flow<PagingData<House>> =
@@ -78,7 +77,7 @@ class GoTRepository @Inject constructor(
 			}
 	}
 
-	override val coroutineContext: CoroutineContext = Dispatchers.IO + SupervisorJob()
+	override val coroutineContext: CoroutineContext = coroutineDispatcher + SupervisorJob()
 
 	companion object {
 		private const val HOUSES_PAGE_SIZE = 20
